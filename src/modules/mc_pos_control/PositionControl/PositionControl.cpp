@@ -256,8 +256,40 @@ void PositionControl::getLocalPositionSetpoint(vehicle_local_position_setpoint_s
 	_thr_sp.copyTo(local_position_setpoint.thrust);
 }
 
-void PositionControl::getAttitudeSetpoint(vehicle_attitude_setpoint_s &attitude_setpoint) const
+void PositionControl::getAttitudeSetpoint(vehicle_attitude_setpoint_s &attitude_setpoint, bool landed)
 {
-	ControlMath::thrustToAttitude(_thr_sp, _yaw_sp, attitude_setpoint);
-	attitude_setpoint.yaw_sp_move_rate = _yawspeed_sp;
+	manual_control_setpoint_s manual_control_setpoint;
+	_manual_control_setpoint_sub.copy(&manual_control_setpoint);
+
+	_roll_angle = 0.f;
+	_pitch_angle = 0.f;
+
+	if(_params.fa_enable == 0)
+	{
+		ControlMath::thrustToAttitude(_thr_sp, _yaw_sp, attitude_setpoint);
+		attitude_setpoint.yaw_sp_move_rate = _yawspeed_sp;
+	}
+	else
+	{
+		if(!landed)
+		{
+			if(_params.fa_mode & 0x01)
+			{
+				_roll_angle = manual_control_setpoint.aux1 * _params.fa_r_max * M_PI_F / 180;
+			}
+
+			if(_params.fa_mode & 0x02)
+			{
+				_pitch_angle = manual_control_setpoint.aux2 * _params.fa_p_max * M_PI_F / 180;
+			}
+		}
+
+		Quatf q_sp = Eulerf(_roll_angle, _pitch_angle, _yaw_sp);
+		q_sp.copyTo(attitude_setpoint.q_d);
+		attitude_setpoint.yaw_sp_move_rate = _yawspeed_sp;
+
+		Dcmf att_sp_dcm{q_sp};
+		Vector3f thrust_sp_body = att_sp_dcm.transpose() * _thr_sp;
+		thrust_sp_body.copyTo(attitude_setpoint.thrust_body);
+	}
 }

@@ -48,7 +48,12 @@ MulticopterPositionControl::MulticopterPositionControl(bool vtol) :
 	_vehicle_attitude_setpoint_pub(vtol ? ORB_ID(mc_virtual_attitude_setpoint) : ORB_ID(vehicle_attitude_setpoint)),
 	_vel_x_deriv(this, "VELD"),
 	_vel_y_deriv(this, "VELD"),
-	_vel_z_deriv(this, "VELD")
+	_vel_z_deriv(this, "VELD"),
+	_params(_control.getParamHandle()),
+	_param_mpc_fa_enable(_params->fa_enable),
+	_param_mpc_fa_mode(_params->fa_mode),
+	_param_mpc_fa_p_max(_params->fa_p_max),
+	_param_mpc_fa_r_max(_params->fa_r_max)
 {
 	parameters_update(true);
 	_tilt_limit_slew_rate.setSlewRate(.2f);
@@ -556,7 +561,7 @@ void MulticopterPositionControl::Run()
 
 			// Publish attitude setpoint output
 			vehicle_attitude_setpoint_s attitude_setpoint{};
-			_control.getAttitudeSetpoint(attitude_setpoint);
+			_control.getAttitudeSetpoint(attitude_setpoint, _vehicle_land_detected.landed);
 			attitude_setpoint.timestamp = hrt_absolute_time();
 			_vehicle_attitude_setpoint_pub.publish(attitude_setpoint);
 

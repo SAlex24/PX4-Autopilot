@@ -127,7 +127,21 @@ private:
 		.landed = true,
 	};
 
+	control::BlockDerivative _vel_x_deriv; /**< velocity derivative in x */
+	control::BlockDerivative _vel_y_deriv; /**< velocity derivative in y */
+	control::BlockDerivative _vel_z_deriv; /**< velocity derivative in z */
+
+	PositionControl _control;  /**< class for core PID position control */
+
+	parameters *_params;
+
 	DEFINE_PARAMETERS(
+		// Fully Actuated Controller
+		(ParamExtInt<px4::params::MPC_FA_ENABLE>)	_param_mpc_fa_enable,
+		(ParamExtInt<px4::params::MPC_FA_MODE>)		_param_mpc_fa_mode,
+		(ParamExtFloat<px4::params::MPC_FA_P_MAX>)	_param_mpc_fa_p_max,
+		(ParamExtFloat<px4::params::MPC_FA_R_MAX>)	_param_mpc_fa_r_max,
+
 		// Position Control
 		(ParamFloat<px4::params::MPC_XY_P>)         _param_mpc_xy_p,
 		(ParamFloat<px4::params::MPC_Z_P>)          _param_mpc_z_p,
@@ -177,12 +191,6 @@ private:
 		(ParamFloat<px4::params::MPC_XY_VEL_ALL>)   _param_mpc_xy_vel_all,
 		(ParamFloat<px4::params::MPC_Z_VEL_ALL>)    _param_mpc_z_vel_all
 	);
-
-	control::BlockDerivative _vel_x_deriv; /**< velocity derivative in x */
-	control::BlockDerivative _vel_y_deriv; /**< velocity derivative in y */
-	control::BlockDerivative _vel_z_deriv; /**< velocity derivative in z */
-
-	PositionControl _control;  /**< class for core PID position control */
 
 	hrt_abstime _last_warn{0}; /**< timer when the last warn message was sent out */
 
