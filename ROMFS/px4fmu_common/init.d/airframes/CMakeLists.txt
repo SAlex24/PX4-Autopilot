@@ -76,6 +76,7 @@ px4_add_romfs_files(
 	# [6000, 6999] Hexarotor x"
 	6001_hexa_x
 	6002_draco_r
+	6003_hexa_x_fully_actuated
 
 	# [7000, 7999] Hexarotor +"
 	7001_hexa_+
