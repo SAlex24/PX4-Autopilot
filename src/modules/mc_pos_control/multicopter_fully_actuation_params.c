@@ -36,8 +36,7 @@
  *
  * A value of 0 (default) uses the standard controller. A value of 1 enables the fully actuated position controller.
  * In case of fully actuated control, the parameter MPC_FA_MODE determines how the attitude will be controlled.
- *  
- * Attention: Enabling the fully actuated controller for a standard, underactuated drone geometry can lead to unpredicted behavior.
+ * Set to Disabled when using an underactuated hardware.
  *
  * @boolean
  * @group Multicopter Fully Actuation
@@ -47,8 +46,7 @@ PARAM_DEFINE_INT32(MPC_FA_ENABLE, 0);
 /**
  * Mode of the fully actuation
  *
- * Sets how the orientation is going to be controlled. The bitmasks enable roll and pitch control individually.
- * An angle that is not being controlled will constantly be zero.
+ * Sets how the orientation is going to be controlled. An angle that is not being controlled will constantly be zero.
  *
  * @min 0
  * @max 3
